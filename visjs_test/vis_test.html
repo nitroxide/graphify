@@ -36,45 +36,9 @@
     $("#nav a").each(function() {
 		$(this).click(function(e) {
 			selectedTrack = this.innerHTML;
-			network.addNodeMode();
+			//network.addNodeMode();
 		});
-
-		
-			// 	    $(this).mousedown(function() {
-			// 	        isDragging = false;
-			// console.log("mousedown");
-			// 	    });
-			// 	    $(this).mousemove(function() {
-			// 	        isDragging = true;
-			// console.log("mousemove");
-			// if ($("#content:hover").length > 0) {
-			// 	console.log("hover");
-			// }
-			// 	    });
-			// 	    $(this).mouseup(function() {
-			// 	        var wasDragging = isDragging;
-			// 	        isDragging = false;
-			// console.log("mouseup");
-			// 	        if (wasDragging) {
-			// 	alert("bla");
-			// }
-			// 	    });
     });
-	
-	
-	$("#mynetwork").mouseup(function(e) {
-        var newId = (Math.random() * 1e7).toString(32);
-		
-		
-		var x = e.pageX - this.offsetLeft;
-		var y = e.pageY - this.offsetTop;
-		canvPos = network.DOMtoCanvas(x, y);
-
-
-		//addNode(newId, selectedTrack, canvPos.x, canvPos.y);
-	});
-	
-
 	
 	// set size of vis
 	var width = $("#content").width();
@@ -165,8 +129,6 @@
 	
 	
 	function addNode(newId, newLabel, newX, newY) {
-		alert("Hallo");
-		
         data.nodes.add({
 			id:newId,
 			label: newLabel,
@@ -174,13 +136,17 @@
 			x:newX,
 			y:newY,
 		});
-        //nodeIds.push(id);
 	}
 	
-	// network.on("dragEnd", function (params) {
-	// 	params.event = "[original event]";
-	// 	//onNodeDragged(params);
-	// });
+	
+	network.on("click", function (params) {
+		params.event = "[original event]";
+		var x = params.pointer.canvas.x;
+		var y = params.pointer.canvas.y;
+        var newId = (Math.random() * 1e7).toString(32);
+	
+		addNode(newId, selectedTrack, x, y);
+	});
 	
 	
 	function onNodeDragged(params) {
@@ -253,26 +219,6 @@
 			data.nodes.update({id: allNodes[n].id, fixed: {x:isFixed, y:isFixed}});
 		}
 	}
-	
-	/*
-	function test() {
-		var allNodes = data.nodes.get({
-		
-
-		nodeKeys = Object.keys(allNodes);
-		
-		for (i = 0; i < nodeKeys.length - 1; i++) {
-			for (j = i + 1; j < nodeKeys.length; j++) {
-				nodeA = allNodes[nodeKeys[i]];
-				nodeB = allNodes[nodeKeys[j]];
-				if (intersects(nodeA, nodeB)) {
-					data.nodes.update({id: nodeA.id, group: nodeB.group});
-					console.log("Group Changed");
-				}
-			}
-		}
-	}
-	*/
 	
 	function intersects(nodeA, nodeB) {
 		var r1 = network.getBoundingBox(nodeA.id);
