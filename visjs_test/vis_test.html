@@ -1,23 +1,67 @@
 <html>
 <head>
     <script type="text/javascript" src="vis/dist/vis.js"></script>
+	<script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
     <link href="../../dist/vis.css" rel="stylesheet" type="text/css" />
+	<link href="./bootstrap-3.3.6-dist/css/bootstrap.css" rel="stylesheet" type="text/css" />
 
     <style type="text/css">
         #mynetwork {
-            width: 600px;
-            height: 400px;
             border: 1px solid lightgray;
         }
+		
+		.nav > li > a {
+			padding: 3px;
+		}
     </style>
 </head>
 <body>
-<div id="mynetwork"></div>
-
-
-<input type="button" onclick="addNode()" value="add node dynamically"> <br />
-
+	<div class="wrapper">
+		<div class="row">
+	    	<div id="content" class="col-xs-8 col-md-10 content">
+				<div id="mynetwork"></div>
+	    	</div>
+		    <div id="nav" class="col-xs-2 left">
+	            <ul class="nav">
+	              <li><a href="#">Default 1</a></li>
+	              <li><a href="#">Zwei</a></li>             
+	            </ul>
+		   	</div>
+		</div>
+	</div>
 <script type="text/javascript">
+    $("#nav a").each(function() {
+		$(this).click(function() {
+			addNode("test");
+		});
+			// 	    $(this).mousedown(function() {
+			// 	        isDragging = false;
+			// console.log("mousedown");
+			// 	    });
+			// 	    $(this).mousemove(function() {
+			// 	        isDragging = true;
+			// console.log("mousemove");
+			// if ($("#content:hover").length > 0) {
+			// 	console.log("hover");
+			// }
+			// 	    });
+			// 	    $(this).mouseup(function() {
+			// 	        var wasDragging = isDragging;
+			// 	        isDragging = false;
+			// console.log("mouseup");
+			// 	        if (wasDragging) {
+			// 	alert("bla");
+			// }
+			// 	    });
+    });
+
+	
+	// set size of vis
+	var width = $("#content").width();
+	var height = $(document).height();
+	$("#mynetwork").css('width', width);
+	$("#mynetwork").css('height', height);
+	
     // create an array with nodes
     var nodes = new vis.DataSet([
         {id: 1, label: 'Node 1', shape: 'circle' },
@@ -70,11 +114,12 @@
     var network = new vis.Network(container, data, options);
 	
 	
-	function addNode() {
+	function addNode(name) {
 	        var newId = (Math.random() * 1e7).toString(32);
 	        nodes.add({
 				id:newId,
-				label:"I'm new!",
+				label: name,
+				shape: 'circle',
 				x:-100,
 				y:-100,
 			});
