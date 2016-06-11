@@ -30,10 +30,16 @@
 		</div>
 	</div>
 <script type="text/javascript">
+	
+	var selectedTrack;
+	
     $("#nav a").each(function() {
-		$(this).click(function() {
-			addNode("test");
+		$(this).click(function(e) {
+			selectedTrack = this.innerHTML;
+			network.addNodeMode();
 		});
+
+		
 			// 	    $(this).mousedown(function() {
 			// 	        isDragging = false;
 			// console.log("mousedown");
@@ -54,6 +60,20 @@
 			// }
 			// 	    });
     });
+	
+	
+	$("#mynetwork").mouseup(function(e) {
+        var newId = (Math.random() * 1e7).toString(32);
+		
+		
+		var x = e.pageX - this.offsetLeft;
+		var y = e.pageY - this.offsetTop;
+		canvPos = network.DOMtoCanvas(x, y);
+
+
+		//addNode(newId, selectedTrack, canvPos.x, canvPos.y);
+	});
+	
 
 	
 	// set size of vis
@@ -144,22 +164,23 @@
     var network = new vis.Network(container, data, options);
 	
 	
-	function addNode(name) {
-	        var newId = (Math.random() * 1e7).toString(32);
-	        nodes.add({
-				id:newId,
-				label: name,
-				shape: 'circle',
-				x:-100,
-				y:-100,
-			});
-	        nodeIds.push(newId);
+	function addNode(newId, newLabel, newX, newY) {
+		alert("Hallo");
+		
+        data.nodes.add({
+			id:newId,
+			label: newLabel,
+			shape: 'circle',
+			x:newX,
+			y:newY,
+		});
+        //nodeIds.push(id);
 	}
 	
-	network.on("dragEnd", function (params) {
-		params.event = "[original event]";
-		//onNodeDragged(params);
-	});
+	// network.on("dragEnd", function (params) {
+	// 	params.event = "[original event]";
+	// 	//onNodeDragged(params);
+	// });
 	
 	
 	function onNodeDragged(params) {
