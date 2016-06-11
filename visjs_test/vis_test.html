@@ -62,6 +62,8 @@
 	$("#mynetwork").css('width', width);
 	$("#mynetwork").css('height', height);
 	
+	
+	var imgDir = "img/";
     var nodes = new vis.DataSet([
         {id: 10, label: 'Node 1', shape: 'circularImage', group: "g1", image: imgDir + '1.jpeg'},
         {id: 20, label: 'Node 2', shape: 'circularImage', group: "g1", image: imgDir + '2.jpeg'},
@@ -95,6 +97,9 @@
         {from: 70, to: 120},
         {from: 80, to: 120},
         {from: 90, to: 120}
+		
+		
+    ]);
 
     // create a network
     var container = document.getElementById('mynetwork');
@@ -114,7 +119,7 @@
 	    },
 		
 		nodes: {
-			borderWidth:2,
+			borderWidth:1,
 			size:30,
 			color: {
 				border: '#222222',
@@ -124,7 +129,7 @@
 			},
 		edges: {
 			color: 'gray'
-		}
+		},
 		groups: {
 		    g1: {color:{border:'red'},		borderWidth:4},
 		    g2: {color:{border:'green'},	borderWidth:4},
@@ -132,6 +137,7 @@
 		    g4: {color:{border:'purple'},	borderWidth:4},
 		    g5: {color:{border:'pink'},		borderWidth:4}
 		  }
+		
     };
 
     // initialize your network!
