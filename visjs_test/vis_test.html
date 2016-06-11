@@ -62,22 +62,39 @@
 	$("#mynetwork").css('width', width);
 	$("#mynetwork").css('height', height);
 	
-    // create an array with nodes
     var nodes = new vis.DataSet([
-        {id: 1, label: 'Node 1', shape: 'circle' },
-        {id: 2, label: 'Node 2', shape: 'circle' },
-        {id: 3, label: 'Node 3', shape: 'circle' },
-        {id: 4, label: 'Node 4', shape: 'circle' },
-        {id: 5, label: 'Node 5', shape: 'circle' }
-    ]);
+        {id: 10, label: 'Node 1', shape: 'circularImage', group: "g1", image: imgDir + '1.jpeg'},
+        {id: 20, label: 'Node 2', shape: 'circularImage', group: "g1", image: imgDir + '2.jpeg'},
+        {id: 30, label: 'Node 3', shape: 'circularImage', group: "g1", image: imgDir + '3.jpeg'},
+        {id: 40, label: 'Node 4', shape: 'circularImage', group: "g1", image: imgDir + '4.jpeg'},
+        {id: 50, label: 'Node 5', shape: 'circularImage', group: "g1", image: imgDir + '5.jpeg'},
+        {id: 60, label: 'Node 6', shape: 'circularImage', group: "g2", image: imgDir + '6.jpeg'},
+        {id: 65, label: 'Node 6', shape: 'circularImage', group: "g2", image: imgDir + '6.jpeg'},
+		{id: 70, label: 'Node 7', shape: 'circularImage', group: "g3", image: imgDir + '7.jpeg'},
+        {id: 80, label: 'Node 8', shape: 'circularImage', group: "g3", image: imgDir + '8.jpeg'},
+        {id: 90, label: 'Node 9', shape: 'circularImage', group: "g3", image: imgDir + '9.jpeg'},
+    
+        {id: 100, label: 'Cluster 1', shape: 'circular', group: "g1", image: imgDir + '9.jpeg'},
+        {id: 110, label: 'Cluster 2', shape: 'circular', group: "g2", image: imgDir + '9.jpeg'},
+        {id: 120, label: 'Cluster 3', shape: 'circular', group: "g3", image: imgDir + '9.jpeg'},
+		
+	
+	]);
 
     // create an array with edges
     var edges = new vis.DataSet([
-        {from: 1, to: 3},
-        {from: 1, to: 2},
-        {from: 2, to: 4},
-        {from: 2, to: 5}
-    ]);
+        {from: 10, to: 100},
+        {from: 20, to: 100},
+        {from: 30, to: 100},
+        {from: 40, to: 100},
+        {from: 50, to: 100},
+		
+        {from: 60, to: 110},
+        {from: 65, to: 110},
+		
+        {from: 70, to: 120},
+        {from: 80, to: 120},
+        {from: 90, to: 120}
 
     // create a network
     var container = document.getElementById('mynetwork');
@@ -93,7 +110,7 @@
 		height: '100%',
 		width: '100%',
 	    physics:{
-	      enabled: false,
+	      enabled: true,
 	    },
 		
 		nodes: {
@@ -106,8 +123,15 @@
 				font:{color:'#eeeeee'}
 			},
 		edges: {
-			color: 'lightgray'
+			color: 'gray'
 		}
+		groups: {
+		    g1: {color:{border:'red'},		borderWidth:4},
+		    g2: {color:{border:'green'},	borderWidth:4},
+		    g3: {color:{border:'blue'},		borderWidth:4},
+		    g4: {color:{border:'purple'},	borderWidth:4},
+		    g5: {color:{border:'pink'},		borderWidth:4}
+		  }
     };
 
     // initialize your network!
@@ -124,6 +148,113 @@
 				y:-100,
 			});
 	        nodeIds.push(newId);
+	}
+	
+	network.on("dragEnd", function (params) {
+		params.event = "[original event]";
+		//onNodeDragged(params);
+	});
+	
+	
+	function onNodeDragged(params) {
+		var allNodes = data.nodes.get({returnType: "Object"});
+		var draggedNode = data.nodes.get({
+		  filter: function (item) {
+		    return item.id == params.nodes;
+		  }
+		})[0];
+		
+		
+		for (n in allNodes) {
+			node = allNodes[n];
+			if (draggedNode.id != node.id) {
+				if(intersects(draggedNode, node)) {
+					console.log("Collision with ", node.id);
+					onNodeIntersection(draggedNode, node);
+				}
+			}
+		}
+		
+	}
+	
+	function onNodeIntersection(draggedNode, node) {
+		// Change group of dragged node to other node's group
+		data.nodes.update({id: draggedNode.id, group: node.group});
+		//data.edges.add({from: draggedNode.id, to: node.id});
+		
+		
+		console.log("Group Changed");
+		
+		/*
+		// Push away overlap
+		setAllNodesFixed(true);
+		
+		//setAllEdgesFixed(true);
+		//setEdgeNonFixed(draggedNode, node);
+		
+
+		data.nodes.update({id: draggedNode.id, fixed: {x:false, y:false}});
+		options.physics.enabled = true;
+		network.setOptions(options);
+
+		setTimeout(function(){
+			options.physics.enabled = false;
+			network.setOptions(options);
+			setAllNodesFixed(false);
+			//setAllEdgesNonFixed();
+		}, 3000);
+		
+			*/
+	}
+	
+	function setAllEdgesFixed(isFixed) {
+		edges = data.edges;
+		for (n in edges) {
+			data.edges.update({id: edges[n].id, physics:!isFixed});		
+		}
+	}
+	
+	function setEdgeNonFixed(draggedNode, node) {
+		edges = network.getConnectedEdges(draggedNode.id);
+
+		data.edges.update({id: edges[0].id, physics:true});		
+	}
+	
+	function setAllNodesFixed(isFixed) {
+		var allNodes = data.nodes.get({returnType: "Object"});
+		for (n in allNodes) {
+			data.nodes.update({id: allNodes[n].id, fixed: {x:isFixed, y:isFixed}});
+		}
+	}
+	
+	/*
+	function test() {
+		var allNodes = data.nodes.get({
+		
+
+		nodeKeys = Object.keys(allNodes);
+		
+		for (i = 0; i < nodeKeys.length - 1; i++) {
+			for (j = i + 1; j < nodeKeys.length; j++) {
+				nodeA = allNodes[nodeKeys[i]];
+				nodeB = allNodes[nodeKeys[j]];
+				if (intersects(nodeA, nodeB)) {
+					data.nodes.update({id: nodeA.id, group: nodeB.group});
+					console.log("Group Changed");
+				}
+			}
+		}
+	}
+	*/
+	
+	function intersects(nodeA, nodeB) {
+		var r1 = network.getBoundingBox(nodeA.id);
+		var r2 = network.getBoundingBox(nodeB.id);		
+		
+		return !(r2.left > r1.right || 
+		           r2.right < r1.left || 
+		           r2.top > r1.bottom ||
+		           r2.bottom < r1.top);
 	}
 </script>
 </body>
