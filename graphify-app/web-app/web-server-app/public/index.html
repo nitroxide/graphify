@@ -13,8 +13,8 @@
 
 
     <style type="text/css">
-      #login, #loggedin-bar, #obtain-new-token, /*#graph-canvas*/ {
-        display: none;
+      #loggedin-bar, #obtain-new-token, #graph-canvas {
+        opacity: 0;
       }
       .text-overflow {
         overflow: hidden;
@@ -46,34 +46,27 @@
         <h1 align="center">Welcome to Graphify - Shape your Sound</h1>
         <div align="center"><a href="/login" class="btn btn-primary">Log in with Spotify</a></div>
       </div>
-      <div id="loggedin-bar">
-          <div id="user-profile">
-              <!-- Access Token: <p id="access_token">NONE</p>
-              Refresh Token: <p id="refresh_token">NONE</p> -->
-              <p id="user_profile_img">NONE</p>
-              <!-- ID: <p id="response">NONE</p> -->
-              Logged in as: <p id="user-info">NONE</p>
-              <!-- Display Name: <p id="user_mail">NONE</p> -->
-
-          </div>
-
-          <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
-          <button class="btn btn-default" id="get-playlists">Get Playlists</button>
-          <button class="btn btn-default" id="add-edge">Add Edge</button>
-
-
-          <div id="playlists"></div>
-      </div>
     </div>
     <div id=graph-canvas class="wrapper">
 		<div class="row">
 	    	<div id="content" class="col-xs-8 col-md-10 content">
 				<div id="mynetwork"></div>
 	    	</div>
-		    <div id="nav" class="col-xs-2 left">
-	            <ul id="nav-ul" class="nav">
-	              <li><a href="#">Default 1</a></li>
-	              <li class="track-item"><a href="#">Zwei</a></li>
+		    <div id="nav" class="col-xs-2 left" >
+		        <div id="loggedin-bar" align="center">
+		            <div id="user-profile">
+		                <!-- Access Token: <p id="access_token">NONE</p>
+		                Refresh Token: <p id="refresh_token">NONE</p> -->
+		                <!-- ID: <p id="response">NONE</p> -->
+		                <p id="user-info">NONE</p>
+		                <!-- Display Name: <p id="user_mail">NONE</p> -->
+						<div id="user_profile_img">NONE</div><br>
+			            <button class="btn btn-default" id="get-playlists">Get Playlists</button>
+			            <button class="btn btn-default" id="add-edge">Add Edge</button>
+						<br/>
+		            </div>
+		        </div>
+	            <ul style="margin-top:10px;" id="nav-ul" class="nav">
 	            </ul>
 		   	</div>
 		</div>
@@ -386,8 +379,8 @@
                 success: function(response) {
 
                   $('#login').hide();
-                  $('#loggedin-bar').show();
-                  $('#graph-canvas').show();
+                  $('#loggedin-bar').css('opacity','1');
+                  $('#graph-canvas').css('opacity','1');
 
                   user_id = response.id;
                   user_mail = response.email;
@@ -397,7 +390,7 @@
                 //   $('#response').html(user_id);
                 //   $('#user_mail').html(user_mail);
                 //   $('#display_name').html(display_name);
-                  $('#user_profile_img').html("<img src=" +  user_profile_img + ">");
+                  $('#user_profile_img').html("<img src=" +  user_profile_img + " class='img-circle' style='width: 100px;'>");
                   $('#user-info').html(display_name + " (" + user_mail + ")");
                 }
             });
@@ -437,7 +430,7 @@
                     // });
                     $.each(data.response.items, function() {
                         console.log(this.name);
-                        $('#nav-ul').append("<li><a onclick=\"getTracks('" + this.tracks.href + "','" + this.id + "','" + access_token + "')\">" + this.name + "</a><ul style=\"list-style-type:disc\" id=\"tracklist\" ></ul></li><ul id=\"" + this.id +  "\"></ul>");
+                        $('#nav-ul').append("<li class='list-group-item'><a onclick=\"getTracks('" + this.tracks.href + "','" + this.id + "','" + access_token + "')\">" + this.name + "</a><ul style=\"list-style-type:disc\" id=\"tracklist\" ></ul></li><ul id=\"" + this.id +  "\"></ul>");
 
                     });
                 });
@@ -463,7 +456,7 @@
                   $.each(this.track.artists, function() {
                       artists += this.name + " ";
                   });
-                  $('#' + data.playlist_id).append("<li><img src=\"" + this.track.album.images[2].url + "\"><a onclick=\"addTrack('" + this.track.album.images[2].url + "', '" + this.track.name + " - " + artists + "','" + this.track.id + "')\" class=\"track-item\" href=\"#\">" + artists + this.track.name + "</a></li>");
+                  $('#' + data.playlist_id).append("<li class='list-group-item'><img src=\"" + this.track.album.images[2].url + "\" style='width:25px;'> <a onclick=\"addTrack('" + this.track.album.images[2].url + "', '" + this.track.name + " - " + artists + "','" + this.track.id + "')\" class=\"track-item\" href=\"#\">" + artists + this.track.name + "</a></li>");
 
               });
           });
