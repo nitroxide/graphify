@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+  body {
+    margin: 0px;
+    padding: 0px;
+  }
+  header {
+    position: relative;
+    color: #ffffff;
+    background: rgba(0,0,0,0.7);
+    padding: 0px 12.5%;
+    z-index: 10;
+  }
+  header h1 {
+    margin: 0px;
+    padding: 0px;
+  }
+  header h1#logo {
+    display: inline-block;
+    width: 183px;
+    height: 66px;
+    background: url('logo.svg') no-repeat 0px 0px;
+    background-size: content;
+    font-size: 0px;
+    color: transparent;
+    vertical-align: top;
+  }
+  header h2 {
+    display: inline-block;
+    vertical-align: top;
+    width: calc(100% - 183px - 128px - 8px);
+    text-align: center;
+  }
+  header div#login {
+    display: inline-block;
+    vertical-align: top;
+    width: 128px;
+    height: 66px;
+    text-align: center;
+  }
+  header div#login button {
+    display: inline-block;
+    margin: 23px auto;
+  }
+  main {
+    position: absolute;
+    background: red;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    z-index: 1;
+  }
+  main {
+    background: url('8ZYMME7ROJ.jpg');
+    background-size: cover;
+  }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="logo">graphify</h1>
+    <h2><!-- Your awesome webservice --></h2>
+    <div id="login">
+      <button onclick="location.href='http://localhost:8888/login'">Login</button>
+    </div>
+  </header>
+  <main>
+    <!-- Content for later
+    <article>
+    </article>
+  -->
+  </main>
+</body>
+</html>
