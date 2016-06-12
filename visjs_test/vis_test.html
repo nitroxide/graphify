@@ -61,7 +61,7 @@
         {id: 40, label: 'Node 4', shape: 'circularImage', group: "g1", image: imgDir + '4.jpeg'},
         {id: 50, label: 'Node 5', shape: 'circularImage', group: "g1", image: imgDir + '5.jpeg'},
         {id: 60, label: 'Node 6', shape: 'circularImage', group: "g2", image: imgDir + '6.jpeg'},
-        {id: 65, label: 'Node 6', shape: 'circularImage', group: "g2", image: imgDir + '6.jpeg'},
+        {id: 65, label: 'Node 6.5', shape: 'circularImage', group: "g2", image: imgDir + '6.jpeg'},
 		{id: 70, label: 'Node 7', shape: 'circularImage', group: "g3", image: imgDir + '7.jpeg'},
         {id: 80, label: 'Node 8', shape: 'circularImage', group: "g3", image: imgDir + '8.jpeg'},
         {id: 90, label: 'Node 9', shape: 'circularImage', group: "g3", image: imgDir + '9.jpeg'},
@@ -169,6 +169,7 @@
 	
 		if (selectedTrack != null) {
 			addNode(newId, selectedTrack, x, y);
+			selectedTrack = null;
 		}
 	});
 	
@@ -188,7 +189,7 @@
 
 		for (n in allNodes) {
 			node = allNodes[n];
-			if (draggedNode.id != node.id) {
+			if (typeof draggedNode.id != "undefined" && draggedNode.id != node.id) {
 				if(intersects(draggedNode, node)) {
 					console.log("Collision with ", node.id);
 					onNodeIntersection(draggedNode, node);
