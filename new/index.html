@@ -1,0 +1,245 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Test</title>
+  <style>
+  body {
+	  margin: 0;
+	  padding: 0;
+	  font-family: Verdana;
+	  font-size: 9pt;
+  }
+  
+  .box {
+	  width: 200px;
+	  border: 1px solid black;
+	  margin: 5px;
+	  display: inline-block;
+  }
+  
+  ul {
+	  list-style-type: none;
+	  margin: 0;
+	  padding: 0;
+  }
+  
+  li {
+	  line-height: 40px;
+	  height: 40px;
+	  margin-bottom: 1px;
+  }
+  
+  li a {
+	  display: block;
+	  padding: 2px 0 2px 50px;
+	  background-size: 40px !important;
+	  height: 40px;
+	  overflow: hidden;	  /* todo: not smart at all */
+  }
+  
+  li:hover {
+	  background-color: #f2f2f2;
+  }
+  
+  li a:hover {
+	  border-color: #C2C2C2;
+  }
+  
+  h3 {
+	  margin: 5px 0 5px 10px;
+  }
+  
+  #menu_top {
+	  width: 100%;
+	  background: #222222;
+	  margin: 0;
+	  color: #ffffff;
+      display:flex;
+      justify-content: space-between;
+      background: -webkit-linear-gradient(#000000, #222222); /* For Safari 5.1 to 6.0 */
+      background: -o-linear-gradient(#000000, #222222); /* For Opera 11.1 to 12.0 */
+      background: -moz-linear-gradient(#000000, #222222); /* For Firefox 3.6 to 15 */
+      background: linear-gradient(#555555, #222222); /* Standard syntax (must be last) */
+  }
+  
+  #menu_top > * {
+	  margin: 14px 16px 14px 16px;
+	  vertical-align: center;
+  }
+  
+  #menu_side {
+	  background: #222222;
+	  display: inline-block;
+	  width: 300px;
+	  right: 0;
+	  overflow: scroll;
+	  color: #fff;
+	  position: absolute;
+	  height: 60%;
+	  border-radius: 0 0 0 9px;
+	  display: none;
+  }
+  
+  #searchResults {
+	  width: 300px;
+	  height: 95%;
+	  background: #FFF;
+	  border: 1px solid black;
+	  position: absolute;
+	  top: 0;
+	  display: none;
+	  overflow: scroll;
+	  z-index: 1000;
+  }
+  
+  .roundButton {
+	border-radius: 6px;
+	border: 1px solid #fff;
+	background: rgba(0,0,0,0);
+	color: #ffffff;
+	padding: 6px;
+	cursor: pointer;
+  }
+  
+  input {
+	border-radius: 6px;
+	border: 1px solid #fff;
+	background: rgba(0,0,0,0);
+	color: #ffffff;
+
+  }
+  
+  input, select, textarea, button{font-family:inherit;}
+  </style>
+</head>
+
+<body>
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="bower_components/spotify-web-api-js/src/spotify-web-api.js"></script>
+	<script src="bower_components/handlebars/handlebars.js"></script>
+	<script>
+		Handlebars.registerHelper('searchResultList', function(a_name, image_url) {
+			var image_url = Handlebars.escapeExpression(image_url);
+		  	var anchorName = Handlebars.escapeExpression(a_name);
+			var return_string = "<li>";
+			
+			if (image_url != null) {
+				return_string += '<a href="#" style="background:url(' + image_url + ') no-repeat;">'
+			} else {
+				return_string += '<a href="#">'
+			}
+			return_string += anchorName + '</a></li>';
+			return new Handlebars.SafeString(return_string);
+		});
+	</script>
+	<script type="text/template" id="template_searchResults">
+		<h3>Tracks:</h3>
+		<ul>
+		{{#each tracks.items}}
+			{{searchResultList name album.images.2.url}}
+		{{/each}}
+		</ul>
+		<h3>Albums:</h3>
+		<ul>
+		{{#each albums.items}}
+			{{searchResultList name images.2.url}}
+		{{/each}}
+		</ul>
+		<h3>Artists:</h3>
+		<ul>
+		{{#each artists.items}}
+			{{searchResultList name images.2.url}}
+		{{/each}}
+		</ul>
+		<h3>Playlists:</h3>
+		<ul>
+		{{#each playlists.items}}
+			{{searchResultList name images.2.url}}
+		{{/each}}
+		</ul>
+	</script>
+	<script type="text/javascript">
+		var spotifyApi = new SpotifyWebApi();
+		
+		$(document).ready(function () 	{
+			// initialize stuff
+			$('#input_search').keyup(function(event) {
+				if (event.keyCode == 13) {
+					$('#button_search').click();
+				}
+			})
+			// for debugging
+			// $('#input_search').val('asd');
+			// $('#button_search').click();
+			$(document).click(function () {
+				$('#searchResults').hide();
+			});
+			$(document).keyup(function(event) {
+				if (event.keyCode == 27) {
+					$('#searchResults').hide();
+				}
+			});
+			// set searchresult margin
+			$('#searchResults').css('right', $('#menu_top_right').outerWidth(true));
+			getUser();
+		});
+				
+		function searchTracks() {
+			var input_search = $('#input_search').val();
+			$('#searchResults').html("");
+			spotifyApi.search(input_search, ['album', 'artist', 'playlist', 'track'])
+			.then(function(data) {
+			  console.log("Search for " + input_search, data);
+			  var source = $('#template_searchResults').html();
+			  console.log(source);
+			  var template = Handlebars.compile(source);
+			  $('#searchResults').html(template(data));
+			  $('#searchResults').show();
+			}, function(err) {
+			  console.error(err);
+			});
+		}
+		
+		function getUser() {
+			var params = {}
+			location.hash.substr(1).split("&").forEach(function(item) {params[item.split("=")[0]] = item.split("=")[1]})
+			spotifyApi.setAccessToken(params['access_token']);
+			spotifyApi.getMe()
+			.then(function(data) {
+			  console.log("Got User " + input_search, data);
+			  // TODO build template
+			  $('#menu_top_middle').html("Logged in as <b>" + data.display_name);
+			  // </b><img id='profile_pic' src=" + data.images['0'].url + ">");
+			}, function(err) {
+			  console.error(err);
+			  return false;
+			});
+		}
+		
+		function requestAuth() {
+			redirect_uri = 'http://localhost:8000';
+			client_id = '9e2e16a799484e55a180c9ace3668341';
+			
+			var url = "https://accounts.spotify.com/authorize";
+			url += "?response_type=token";
+			url += "&redirect_uri=" + redirect_uri;
+			url += "&client_id=" + client_id;
+			url += "&scope=" + "user-read-private user-read-email";
+			console.log(encodeURI(url));
+			window.location.href = url;
+		}
+	</script>
+	<div id="menu_top">
+		<div style="display: inline-block;"><b>Graphify</b></div>
+		<div id="menu_top_middle" style="display: inline-block;"><span onclick="requestAuth()" class="roundButton">Login with Spotify</span></div>
+		<div id="menu_top_right" style="display: inline-block;"><input type="text" id="input_search" placeholder="Search">
+			<span class="roundButton" id="button_search" onclick="searchTracks()">Go</span>
+		</div>
+	</div>
+	<div id="searchResults"></div>
+	<div id="menu_side"></div>
+</body>
+</html>
